@@ -3,12 +3,30 @@ import json
 import asyncio
 from openai import AsyncOpenAI
 from colorama import init, Fore, Back, Style
+import argparse
 
 init()  # Initialize colorama for colored terminal output
 
 client = AsyncOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),  # Initialize the OpenAI client with your API key
 )
+def get_model_version_from_args():
+    parser = argparse.ArgumentParser(description="Run a Python-themed virtual escape room with dynamic model selection.")
+    parser.add_argument("--model", type=int, choices=[3, 4], required=True, help="Specify the model version to use (3 for GPT-3.5 Turbo, 4 for GPT-4).")
+    args = parser.parse_args()
+    
+    model_mapping = {
+        3: "gpt-3.5-turbo-0125",
+        4: "gpt-4-0125-preview"
+    }
+    
+    return model_mapping[args.model]
+
+
+model_version = get_model_version_from_args()
+
+
+
 
 def load_rooms(filename: str) -> list:
     """
@@ -58,7 +76,7 @@ async def ask_question(room_number: int, question_number: int, question: str, ex
                 messages = [
                     {
                         "role": "system",
-                        "content": "Provide a hint for the question without revealing the answer directly. Make sure no hint is the same.",
+                        "content": "Craft a series of progressively revealing hints for the question, each designed to guide closer to the answer without disclosing it outright. Ensure uniqueness across all hints, with each subsequent hint offering more clarity than the last, gradually simplifying the path to the solution. Please present each hint in a straightforward manner, without prefacing them with labels like 'hint:' or 'hint 1:'.",
                     },
                     {
                         "role": "assistant",
@@ -83,7 +101,7 @@ async def ask_question(room_number: int, question_number: int, question: str, ex
                 # Request a hint from the OpenAI API
                 hint_completion = await client.chat.completions.create(
                     messages=messages,
-                    model="gpt-3.5-turbo-0125",
+                    model=model_version,
                 )
                 hint_content = hint_completion.choices[0].message.content
                 previous_hints.append(hint_content)  # Remember this hint
@@ -100,7 +118,7 @@ async def ask_question(room_number: int, question_number: int, question: str, ex
             messages=[
                 {
                     "role": "system",
-                    "content": "This is a question and answer validation system. Reply YES if the user's answer is correct, otherwise reply NO.",
+                    "content": "This is a question and answer validation system. Reply YES if the user's answer is correct, otherwise reply NO. Case sensitivity is not an issue",
                 },
                 {
                     "role": "assistant",
@@ -115,7 +133,7 @@ async def ask_question(room_number: int, question_number: int, question: str, ex
                     "content": user_answer,
                 },
             ],
-            model="gpt-3.5-turbo-0125",
+            model=model_version,
         )
         completion_content = chat_completion.choices[0].message.content
         if "YES" in completion_content:
