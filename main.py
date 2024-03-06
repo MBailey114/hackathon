@@ -1,79 +1,115 @@
+import json
+import os
 import re
+import time
+
+from colorama import Fore, Back, Style
 
 import openai
-import os
-import json
 
-openai.my_api_key = os.environ.get("OPENAI_API_KEY")
+clear = lambda: os.system('clear')
 
-baseMessages = [{"role": "system", "content": "Reply YES for true or NO for false. When user asks for hints, do not "
-                                              "provide the answer.", }]
+baseMessages = [{"role": "system",
+                 "content": "can you explicitly reply YES for true or NO for false. Only replying with YES or NO to the question.", }]
+hintMessages = [{"role": "system", "content": " When user asks for a hint, do not provide the answer.", }]
 f = open("questions.json")
 rooms = json.load(f)
+rooms = rooms["rooms"]
 
 myRoom = 0
 myQuestion = 0
 hintsLeft = 5
 falseAnswers = 0
 alive = True
+new_room = True
 
 
-def doHint(question, answer):
-    messages = baseMessages
-    messages.extend([
+def do_hint(question, question_answer):
+    hint_messages = hintMessages.copy()
+    hint_messages.extend([
         {
             "role": "assistant",
-            "content": "QUESTION:"+question,
+            "content": "QUESTION:" + question,
         },
         {
             "role": "user",
-            "content": "ANSWER:"+answer
-        }
+            "content": "ANSWER:" + question_answer
+        },
+        {
+            "role": "user",
+            "content": "Can you give me a hint please?"
+        },
     ])
-    chat = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0125", messages=messages
+
+    return getPoodleResponse(hint_messages)
+
+
+def getPoodleResponse(query_messages):
+    openai.my_api_key = os.environ.get("OPENAI_API_KEY")
+
+    #pprint(query_messages)
+
+    chat = openai.chat.completions.create(
+        model="gpt-3.5-turbo-0125", messages=query_messages
     )
 
-    reply = chat.choices[0].message.content
-    return reply
-    pass
+    return chat.choices[0].message.content
 
+
+def print_room(room_number):
+    clear()
+    print(Fore.BLUE+Style.BRIGHT+f'Room {rooms[myRoom]["Room"]}')
+    print(Style.NORMAL+rooms[myRoom]["Description"])
+    print(Fore.CYAN+Style.BRIGHT+f"Question {(myQuestion+1)} of {(len(rooms[myRoom]['Questions']))}")
+    print(Fore.LIGHTMAGENTA_EX+Style.NORMAL+f'You have {(rooms[myRoom]["Lives"] - falseAnswers)} lives left' )
+    print(Back.YELLOW+Fore.LIGHTGREEN_EX+Style.BRIGHT+rooms[myRoom]["Questions"][myQuestion]["Question"])
+    print(Style.RESET_ALL)
+
+def read_input():
+    print("Answer: ")
+    a = []
+    for line in iter(input, ''):
+        a.append(line)
+    return a
 
 while alive:
-    print(f'Room {rooms[myRoom]["Room"]}')
-    print(rooms[myRoom]["Description"])
-    print(f'You have {0} lives left', rooms[myRoom]["Lives"]-falseAnswers)
-    print(rooms[myRoom]["Questions"][myQuestion]["Question"])
+    if new_room:
+        print_room(myRoom)
+        new_room = False
 
-    answer = input("Answer: ")
+    ans = read_input()
+    answer = '\n'.join(ans)
 
-    if re.match("\bhint\b", answer, re.IGNORECASE):
+    if re.match(".*hint.*", answer, re.IGNORECASE):
+        #print("doing hint")
         hintsLeft -= 1
         if hintsLeft < 0:
             print("no more hints")
             hintsLeft = 0
             continue
         else:
-            hint = doHint(rooms[myRoom]["Questions"][myQuestion]["Question"], rooms[myRoom]["Questions"][myQuestion]["Answer"])
+            hint = do_hint(rooms[myRoom]["Questions"][myQuestion]["Question"],
+                           rooms[myRoom]["Questions"][myQuestion]["Answer"])
             print(hint)
             continue
-    messages = baseMessages
+
+    messages = baseMessages.copy()
+    #print("base: " + str(messages) + "::")
     messages.extend([
         {
             "role": "assistant",
-            "content": rooms[myRoom]["Questions"][myQuestion]["Question"],
+            "content": rooms[myRoom]["Questions"][myQuestion]["Question"] + ". The answer is " + rooms[myRoom]["Questions"][myQuestion]["Answer"]
         },
         {
             "role": "user",
             "content": answer
         }
     ])
-    chat = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0125", messages=messages
-    )
 
-    reply = chat.choices[0].message.content
-    if reply == "Yes":
+    reply = getPoodleResponse(messages)
+    if re.match("YES", reply, re.IGNORECASE):
+        print(Fore.GREEN+"The answer is correct")
+        new_room = True
         myQuestion += 1
         if myQuestion >= len(rooms[myRoom]["Questions"]):
             myQuestion = 0
@@ -85,15 +121,16 @@ while alive:
                 print(f'moving to room {rooms[myRoom]["Room"]}', )
         else:
             print("Moving on to the next question")
+        time.sleep(2.0)
         continue
-    elif reply == "No":
-
+    elif re.match("NO", reply, re.IGNORECASE):
         falseAnswers += 1
         if falseAnswers >= rooms[myRoom]["Lives"]:
             alive = False
-        print("Sorry, that is incorrect you have " + str(rooms[myRoom]["Lives"]-falseAnswers) + " lives left")
+        print(Fore.RED+Style.BRIGHT+"Sorry, that is incorrect you have " + str(rooms[myRoom]["Lives"] - falseAnswers) + " lives left")
+        print(Style.RESET_ALL)
+        time.sleep(2.0)
         continue
     else:
-        print("Sorry unable to parse answer")
-
+        print("Sorry unable to parse your answer ")
 

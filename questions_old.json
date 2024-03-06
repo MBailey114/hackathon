@@ -21,6 +21,10 @@
         {
           "Question": "Which keyword is correct for 'else if' in Python: else if, elseif, elsif, or elif?",
           "Answer": "elif"
+        },
+        {
+          "Question": "Given an integer variable 'x'. Write a conditional statement using the correct 'else if' syntax in Python that prints 'Small' if x < 10, 'Medium' if 10 <= x < 20, and 'Large' if x >= 20.",
+          "Answer": "if x < 10:\n    print('Small')\nelif x < 20:\n    print('Medium')\nelse:\n    print('Large')"
         }
       ]
     },
