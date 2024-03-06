@@ -8,6 +8,9 @@ Before you begin, ensure you have met the following requirements:
 
 - You have a Linux or macOS system.
 - You have installed Python 3.x.
+- You have installed the following Python packages:
+  - `openai`: You can install it via pip using the command `pip install openai`.
+  - `colorama`: You can install it via pip using the command `pip install colorama`.
 
 ## Setting Up the Environment
 
