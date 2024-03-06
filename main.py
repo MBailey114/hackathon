@@ -66,7 +66,7 @@ def print_room(room_number):
     print(Style.RESET_ALL)
 
 def read_input():
-    print("Answer: ")
+    print(Back.WHITE+Fore.BLACK+"Answer: "+Style.RESET_ALL)
     a = []
     for line in iter(input, ''):
         a.append(line)
@@ -84,13 +84,15 @@ while alive:
         #print("doing hint")
         hintsLeft -= 1
         if hintsLeft < 0:
-            print("no more hints")
+            print(Fore.RED+Style.DIM+"no more hints")
+            print(Style.RESET_ALL)
             hintsLeft = 0
             continue
         else:
             hint = do_hint(rooms[myRoom]["Questions"][myQuestion]["Question"],
                            rooms[myRoom]["Questions"][myQuestion]["Answer"])
-            print(hint)
+            print(Fore.YELLOW+Back.BLUE+hint)
+            print(Style.RESET_ALL)
             continue
 
     messages = baseMessages.copy()
@@ -122,6 +124,7 @@ while alive:
         else:
             print("Moving on to the next question")
         time.sleep(2.0)
+        print(Style.RESET_ALL)
         continue
     elif re.match("NO", reply, re.IGNORECASE):
         falseAnswers += 1
@@ -132,5 +135,5 @@ while alive:
         time.sleep(2.0)
         continue
     else:
-        print("Sorry unable to parse your answer ")
+        print(Fore.RED+"Sorry unable to parse your answer "+Style.RESET_ALL)
 
