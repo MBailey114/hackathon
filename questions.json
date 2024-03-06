@@ -1,0 +1,108 @@
+{
+  "rooms": [
+    {
+      "Room": 1,
+      "Description": "You find yourself in a digital library filled with Python books. A terminal blinks awaiting your input.",
+      "HintsAllowed": 0,
+      "Lives": 1,
+      "Questions": [
+        {
+          "Question": "What is the output of print(2 + 2)?",
+          "Answer": "4"
+        }
+      ]
+    },
+    {
+      "Room": 2,
+      "Description": "You encounter a Python script engraved on the wall, detailing a series of decisions. A question arises on the screen.",
+      "HintsAllowed": 1,
+      "Lives": 2,
+      "Questions": [
+        {
+          "Question": "Which keyword is correct for 'else if' in Python: else if, elseif, elsif, or elif?",
+          "Answer": "elif"
+        },
+        {
+          "Question": "Given an integer variable 'x'. Write a conditional statement using the correct 'else if' syntax in Python that prints 'Small' if x < 10, 'Medium' if 10 <= x < 20, and 'Large' if x >= 20.",
+          "Answer": "if x < 10:\n    print('Small')\nelif x < 20:\n    print('Medium')\nelse:\n    print('Large')"
+        }
+      ]
+    },
+    {
+      "Room": 3,
+      "Description": "In front of you, there's a locked door with a Python-scripted keypad. Solve the next challenges to unlock it.",
+      "HintsAllowed": 1,
+      "Lives": 2,
+      "Questions": [
+        {
+          "Question": "What keyword creates a function in Python?",
+          "Answer": "def"
+        },
+        {
+          "Question": "Define a function named 'unlock' that prints 'Door unlocked'.",
+          "Answer": "def unlock():\n    print('Door unlocked')"
+        }
+      ]
+    },
+    {
+      "Room": 4,
+      "Description": "You've entered a dimly lit room with a large screen displaying a Python challenge. It seems a bit more complex.",
+      "HintsAllowed": 2,
+      "Lives": 3,
+      "Questions": [
+        {
+          "Question": "How do you access the first element of a list named 'treasures'?",
+          "Answer": "treasures[0]"
+        },
+        {
+          "Question": "Write a loop that prints each element of 'treasures'.",
+          "Answer": "for item in treasures:\n    print(item)"
+        },
+        {
+          "Question": "What list method adds an element to the end of the list?",
+          "Answer": "append"
+        }
+      ]
+    },
+    {
+      "Room": 5,
+      "Description": "A mysterious figure challenges you to solve these Python puzzles to proceed. The air crackles with digital energy.",
+      "HintsAllowed": 2,
+      "Lives": 3,
+      "Questions": [
+        {
+          "Question": "Convert the string '123' to an integer.",
+          "Answer": "int('123')"
+        },
+        {
+          "Question": "Given a list 'data = [1, 2, 3]', how do you append the sum of its elements?",
+          "Answer": "data.append(sum(data))"
+        },
+        {
+          "Question": "What is the difference between the '== operator' and the 'is' keyword?",
+          "Answer": "'==' checks for equality in value, while 'is' checks if both operands refer to the same object in memory."
+        }
+      ]
+    },
+    {
+      "Room": 6,
+      "Description": "You reach the final challenge room. Inside, the ultimate Python challenge awaits. Mastering this will grant you the key to escape.",
+      "HintsAllowed": 3,
+      "Lives": 4,
+      "Questions": [
+        {
+          "Question": "What does the 'yield' keyword do in Python?",
+          "Answer": "'yield' is used in a function like 'return' but for generating a sequence of values. It turns a function into a generator."
+        },
+        {
+          "Question": "Write a Python list comprehension that squares each number in a list 'numbers' if it's even.",
+          "Answer": "[x**2 for x in numbers if x % 2 == 0]"
+        },
+        {
+          "Question": "Explain how to handle exceptions in Python.",
+          "Answer": "Use try-except blocks. Code that might raise an exception goes in the 'try' block, and the exception handling code goes in the 'except' block."
+        }
+      ]
+    }
+  ]
+}

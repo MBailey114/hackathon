@@ -1,1 +1,2 @@
 protobuf==4.25.1
+openai~=1.13.3
